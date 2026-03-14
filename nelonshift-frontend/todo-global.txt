@@ -1,0 +1,11 @@
+[•] - NelonShift
+[•] - leetcode
+[•] - Java (Spring: NS)
+[•] - English
+
+[x] - C# .NET
+[x] - Blockchain
+[x] - React Native (NS)
+
+[] - Boxcars
+[] - Portfolio Deploy
