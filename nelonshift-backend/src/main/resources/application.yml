@@ -1,13 +1,12 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/nelon_shift
+    url: jdbc:postgresql://localhost:5432/nelon_shift_db
     username: admin
     password: root
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      # create, update
       ddl-auto: update
     show-sql: true
     properties:
@@ -78,6 +77,8 @@ logging:
 
 springdoc:
   api-docs:
-    enabled: false
+    path: /v3/api-docs
   swagger-ui:
-    enabled: false
+    path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: nelon.arrive.nelonshift
