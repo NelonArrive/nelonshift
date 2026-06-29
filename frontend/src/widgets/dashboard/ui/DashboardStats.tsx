@@ -1,8 +1,8 @@
 'use client'
 
-import { AlertTriangle, Clock } from 'lucide-react'
+import { AlertTriangle, Clock, DollarSign, Hash, TrendingUp } from 'lucide-react'
 
-import { useProjects } from '@/entities/project/hooks'
+import { useDashboardStats } from '@/entities/dashboard'
 
 import { NearestShifts } from '@/features/shift/nearest-shift'
 
@@ -14,29 +14,44 @@ import {
 	Skeleton
 } from '@/shared/components/ui'
 
-export function DashboardStats() {
-	const { data, isLoading, error } = useProjects()
+interface StatCardProps {
+	title: string
+	value: string | number
+	icon: React.ReactNode
+	description?: string
+}
 
-	const projectsThisMonth =
-		data?.content?.filter(p => {
-			const created = new Date(p.createdAt)
-			const now = new Date()
-			return (
-				created.getMonth() === now.getMonth() &&
-				created.getFullYear() === now.getFullYear()
-			)
-		}).length ?? 0
+function StatCard({ title, value, icon, description }: StatCardProps) {
+	return (
+		<Card>
+			<CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+				<CardTitle className='text-sm font-medium'>{title}</CardTitle>
+				{icon}
+			</CardHeader>
+			<CardContent>
+				<p className='text-2xl font-bold'>{value}</p>
+				{description && (
+					<p className='text-muted-foreground mt-1 text-xs'>{description}</p>
+				)}
+			</CardContent>
+		</Card>
+	)
+}
+
+export function DashboardStats() {
+	const { data, isLoading, error } = useDashboardStats()
 
 	if (isLoading) {
 		return (
-			<section className='grid grid-cols-1 gap-6 sm:grid-cols-3'>
-				{Array.from({ length: 3 }).map((_, i) => (
+			<section className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+				{Array.from({ length: 4 }).map((_, i) => (
 					<Card key={i}>
 						<CardHeader>
-							<Skeleton className='h-6 w-1/2' />
+							<Skeleton className='h-4 w-1/2' />
 						</CardHeader>
 						<CardContent>
-							<Skeleton className='h-8 w-20' />
+							<Skeleton className='h-7 w-16' />
+							<Skeleton className='mt-1 h-3 w-1/3' />
 						</CardContent>
 					</Card>
 				))}
@@ -46,38 +61,42 @@ export function DashboardStats() {
 
 	if (error) {
 		return (
-			<section className='mt-10 flex flex-col items-center text-center text-red-500'>
-				<AlertTriangle className='mb-2 h-6 w-6' />
-				<p>Не удалось загрузить статистику 😢</p>
+			<section className='flex items-center justify-center rounded-lg border border-red-200 bg-red-50 py-6 text-red-600 dark:border-red-900 dark:bg-red-950'>
+				<AlertTriangle className='mr-2 h-5 w-5' />
+				Не удалось загрузить статистику
 			</section>
 		)
 	}
 
 	return (
-		<section className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-			<Card>
-				<CardHeader>
-					<CardTitle className='flex items-center gap-2 text-lg'>
-						<Clock className='h-5 w-5' /> Всего проектов
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p className='text-3xl font-bold'>{data?.totalElements ?? 0}</p>
-				</CardContent>
-			</Card>
+		<section className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+			<StatCard
+				title='Активных проектов'
+				value={data?.totalActiveProjects ?? 0}
+				icon={<Clock className='h-4 w-4 text-muted-foreground' />}
+				description={`${data?.totalCompletedProjects ?? 0} завершено`}
+			/>
 
-			<NearestShifts />
+			<StatCard
+				title='Заработок за месяц'
+				value={`${(data?.currentMonthEarnings ?? 0).toLocaleString('ru-RU')} ₽`}
+				icon={<DollarSign className='h-4 w-4 text-muted-foreground' />}
+				description={`${(data?.totalEarnings ?? 0).toLocaleString('ru-RU')} ₽ всего`}
+			/>
 
-			<Card>
-				<CardHeader>
-					<CardTitle className='flex items-center gap-2 text-lg'>
-						📅 В этом месяце
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p className='text-3xl font-bold'>{projectsThisMonth}</p>
-				</CardContent>
-			</Card>
+			<StatCard
+				title='Часов за месяц'
+				value={data?.currentMonthHours ?? 0}
+				icon={<TrendingUp className='h-4 w-4 text-muted-foreground' />}
+				description={`${data?.currentMonthShifts ?? 0} смен`}
+			/>
+
+			<StatCard
+				title='Всего смен'
+				value={data?.totalShifts ?? 0}
+				icon={<Hash className='h-4 w-4 text-muted-foreground' />}
+				description={`${data?.totalHours ?? 0} часов`}
+			/>
 		</section>
 	)
 }

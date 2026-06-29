@@ -37,8 +37,6 @@ export function NewPassword() {
 		<AuthWrapper
 			heading='Новый пароль'
 			description='Придумайте новый пароль для вашего аккаунта'
-			backButtonLabel='Войти в аккаунт'
-			backButtonHref='/auth/login'
 		>
 			<Form {...form}>
 				<form className='grid gap-2 space-y-2'>

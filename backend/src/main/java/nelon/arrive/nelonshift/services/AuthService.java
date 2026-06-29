@@ -164,5 +164,22 @@ public class AuthService implements IAuthService {
 		return userRepository.findById(userDetails.getId())
 			.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 	}
+	
+	public User getCurrentUserWithProjects() {
+		Authentication authentication =
+			SecurityContextHolder.getContext().getAuthentication();
+		
+		if (authentication == null ||
+			!authentication.isAuthenticated() ||
+			authentication.getPrincipal().equals("anonymousUser")) {
+			throw new JwtException("User is not authenticated");
+		}
+		
+		CustomUserDetails userDetails =
+			(CustomUserDetails) authentication.getPrincipal();
+		
+		return userRepository.findByIdWithProjects(userDetails.getId())
+			.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+	}
 }
 

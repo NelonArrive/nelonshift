@@ -1,0 +1,8 @@
+export { AnimatedBackground } from './AnimatedBackground'
+export { TypewriterText } from './TypewriterText'
+export { LandingHeader } from './LandingHeader'
+export { LandingFooter } from './LandingFooter'
+export { HeroSection } from './HeroSection'
+export { FeaturesSection } from './FeaturesSection'
+export { HowItWorksSection } from './HowItWorksSection'
+export { CTASection } from './CTASection'

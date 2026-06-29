@@ -37,8 +37,6 @@ export function ResetPassword() {
 		<AuthWrapper
 			heading='Сброс пароля'
 			description='Для сброса пароля введите свою почту'
-			backButtonLabel='Войти в аккаунт'
-			backButtonHref='/auth/login'
 		>
 			<Form {...form}>
 				<form className='grid gap-2 space-y-2'>

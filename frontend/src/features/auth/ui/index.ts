@@ -1,5 +1,7 @@
 export * from './AuthSocial'
 export * from './AuthWrapper'
+export * from './AuthGuard'
+export * from './GuestGuard'
 export * from './LoginForm'
 export * from './RegisterForm'
 export * from './NewVerificationForm'

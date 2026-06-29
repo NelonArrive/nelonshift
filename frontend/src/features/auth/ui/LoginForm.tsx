@@ -2,10 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
 import { Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -21,18 +22,23 @@ import {
 } from '@/shared/components/ui'
 
 import { authApi } from '../api/auth.api'
-import { executeRecaptcha } from '../lib/recaptcha'
 import { authQueryKey } from '../providers/AuthProvider'
 import { LoginSchema, TypeLoginSchema } from '../schemas'
 
 import { AuthWrapper } from './AuthWrapper'
+import { RecaptchaWidget } from './RecaptchaWidget'
 
 export function LoginForm() {
 	const [showPassword, setShowPassword] = useState(false)
 	const [isShowTwoFactor, setIsShowTwoFactor] = useState(false)
 	const [isPending, setIsPending] = useState(false)
+	const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
 	const router = useRouter()
 	const queryClient = useQueryClient()
+
+	const handleRecaptchaVerify = useCallback((token: string | null) => {
+		setRecaptchaToken(token)
+	}, [])
 
 	const form = useForm<TypeLoginSchema>({
 		resolver: zodResolver(LoginSchema),
@@ -44,6 +50,11 @@ export function LoginForm() {
 	})
 
 	const onSubmit = async (data: TypeLoginSchema) => {
+		if (!isShowTwoFactor && !recaptchaToken) {
+			toast.error('Подтвердите, что вы не робот')
+			return
+		}
+
 		setIsPending(true)
 		try {
 			if (isShowTwoFactor) {
@@ -54,11 +65,10 @@ export function LoginForm() {
 				return
 			}
 
-			const recaptchaToken = await executeRecaptcha('login')
 			const response = await authApi.login({
 				email: data.email,
 				password: data.password,
-				recaptchaToken
+				recaptchaToken: recaptchaToken ?? undefined
 			})
 
 			if (response.requires2fa) {
@@ -84,16 +94,11 @@ export function LoginForm() {
 	return (
 		<AuthWrapper
 			heading='Войти'
-			description='Чтобы войти на сайт введите ваш email и пароль'
-			backButtonLabel='Ещё нет аккаунта? Регистрация'
-			backButtonHref='/auth/register'
+			description='Введите email и пароль для входа'
 			isShowSocial
 		>
 			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(onSubmit)}
-					className='grid gap-2 space-y-2'
-				>
+				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
 					{isShowTwoFactor && (
 						<FormField
 							control={form.control}
@@ -133,11 +138,11 @@ export function LoginForm() {
 								name='password'
 								render={({ field }) => (
 									<FormItem>
-										<div className='flex items-center justify-center'>
+										<div className='flex items-center justify-between'>
 											<FormLabel>Пароль</FormLabel>
 											<Link
 												href='/auth/reset-password'
-												className='ml-auto inline-block text-sm underline'
+												className='text-primary text-xs hover:underline'
 											>
 												Забыли пароль?
 											</Link>
@@ -168,11 +173,22 @@ export function LoginForm() {
 									</FormItem>
 								)}
 							/>
+							<RecaptchaWidget onVerify={handleRecaptchaVerify} />
 						</>
 					)}
-					<Button type='submit' disabled={isPending}>
-						{isShowTwoFactor ? 'Подтвердить код' : 'Войти в аккаунт'}
-					</Button>
+					<motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+						<Button
+							type='submit'
+							disabled={isPending || (!isShowTwoFactor && !recaptchaToken)}
+							className='w-full cursor-pointer'
+						>
+							{isPending
+								? 'Вход...'
+								: isShowTwoFactor
+									? 'Подтвердить код'
+									: 'Войти в аккаунт'}
+						</Button>
+					</motion.div>
 				</form>
 			</Form>
 		</AuthWrapper>

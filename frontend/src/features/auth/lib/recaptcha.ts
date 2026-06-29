@@ -2,7 +2,16 @@ declare global {
 	interface Window {
 		grecaptcha?: {
 			ready: (callback: () => void) => void
-			execute: (siteKey: string, options: { action: string }) => Promise<string>
+			execute: (
+				siteKeyOrWidgetId: string | number,
+				options?: { action: string }
+			) => Promise<string>
+			render: (
+				container: string | HTMLElement,
+				parameters: Record<string, unknown>,
+				callback: (token: string) => void
+			) => number
+			reset: (widgetId: number) => void
 		}
 	}
 }

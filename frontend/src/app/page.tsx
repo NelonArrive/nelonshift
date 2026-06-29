@@ -1,29 +1,25 @@
-import Link from 'next/link'
+'use client'
 
-import { Button } from '@/shared/components/ui'
+import { AnimatedBackground } from '@/shared/components/landing/AnimatedBackground'
+import { CTASection } from '@/shared/components/landing/CTASection'
+import { FeaturesSection } from '@/shared/components/landing/FeaturesSection'
+import { HeroSection } from '@/shared/components/landing/HeroSection'
+import { HowItWorksSection } from '@/shared/components/landing/HowItWorksSection'
+import { LandingFooter } from '@/shared/components/landing/LandingFooter'
+import { LandingHeader } from '@/shared/components/landing/LandingHeader'
 
 export default function Home() {
 	return (
-		<main className='bg-background flex min-h-screen items-center justify-center px-6'>
-			<div className='max-w-lg text-center'>
-				<h1 className='text-foreground mb-4 text-5xl font-bold'>
-					📅 Nelon Shift
-				</h1>
-
-				<p className='text-muted-foreground mb-8 text-lg'>
-					Простое и удобное приложение для учёта смен. Следи за графиком,
-					управляй часами и контролируй занятость.
-				</p>
-
-				<div className='flex justify-center gap-4'>
-					<Button asChild>
-						<Link href='/auth/login'>Войти</Link>
-					</Button>
-					<Button asChild variant='outline'>
-						<Link href='/auth/register'>Регистрация</Link>
-					</Button>
-				</div>
-			</div>
-		</main>
+		<>
+			<AnimatedBackground />
+			<LandingHeader />
+			<main className='relative z-10'>
+				<HeroSection />
+				<FeaturesSection />
+				<HowItWorksSection />
+				<CTASection />
+			</main>
+			<LandingFooter />
+		</>
 	)
 }

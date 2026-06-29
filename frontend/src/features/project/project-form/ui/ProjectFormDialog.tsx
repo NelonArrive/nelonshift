@@ -57,6 +57,7 @@ export function ProjectFormDialog({
 		handleSubmit,
 		reset,
 		watch,
+		setValue,
 		formState: { errors }
 	} = useForm<AddProjectFormData>({
 		resolver: zodResolver(addProjectSchema),
@@ -226,13 +227,15 @@ export function ProjectFormDialog({
 								<Calendar
 									mode='range'
 									selected={{
-										from: field.value,
+										from: startDateValue,
 										to: endDateValue
 									}}
 									onSelect={range => {
-										field.onChange(range?.from || new Date())
+										if (range?.from) {
+											field.onChange(range.from)
+										}
 										if (range?.to) {
-											// endDate will be handled separately
+											setValue('endDate', range.to)
 										}
 									}}
 									defaultMonth={field.value}
@@ -240,10 +243,6 @@ export function ProjectFormDialog({
 										const today = new Date()
 										today.setHours(0, 0, 0, 0)
 										return date < today
-									}}
-									modifiers={{ today: new Date() }}
-									modifiersClassNames={{
-										today: 'bg-muted text-foreground font-bold'
 									}}
 								/>
 							)}

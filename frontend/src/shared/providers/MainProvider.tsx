@@ -3,6 +3,7 @@
 import { type PropsWithChildren } from 'react'
 
 import { TooltipProvider } from '../components/ui/Tooltip'
+import { AppHeader } from '../components/ui/AppHeader'
 
 import { AuthProvider } from '@/features/auth/providers/AuthProvider'
 
@@ -21,6 +22,7 @@ export function MainProvider({ children }: PropsWithChildren<unknown>) {
 			>
 				<TooltipProvider delayDuration={0}>
 					<ToastProvider />
+					<AppHeader />
 					{children}
 				</TooltipProvider>
 			</ThemeProvider>

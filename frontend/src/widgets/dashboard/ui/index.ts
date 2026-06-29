@@ -1,3 +1,6 @@
 export * from './Dashboard'
-export * from './DashboardStats'
 export * from './DashboardHeader'
+export * from './DashboardStats'
+export * from './EarningsBarChart'
+export * from './ShiftsDonutChart'
+export * from './TopProjects'
